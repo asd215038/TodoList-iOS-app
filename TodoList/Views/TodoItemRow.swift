@@ -11,69 +11,73 @@ struct TodoItemRow: View {
     @ObservedObject var viewModel: TodoViewModel
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(item.title)
-                .font(.headline)
-            
-            Text(item.description)
-                .font(.subheadline)
-                .foregroundColor(.gray)
-            
+        NavigationLink(destination: TaskDetailView(item: item, viewModel: viewModel)) {
             HStack {
-                Text(viewModel.getRemainingTime(for: item))
-                    .font(.caption)
-                    .padding(4)
-                    .background(getRemainingTimeColor(for: item))
-                    .cornerRadius(4)
+                // 完成狀態圖標
+                Button(action: {
+                    viewModel.toggleCompletion(for: item)
+                }) {
+                    Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
+                        .foregroundColor(item.status == .paused ? .gray : (item.isCompleted ? .green : .gray))
+                }
+                .disabled(item.status == .paused) // 當任務暫緩時禁用完成按鈕
+                
+                // 主要內容
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(item.title)
+                            .strikethrough(item.isCompleted)
+                            .foregroundColor(item.status == .paused ? .gray : (item.isCompleted ? .gray : .primary))
+                        
+                        Circle()
+                            .fill(item.priority.color)
+                            .frame(width: 8, height: 8)
+                        
+                        if item.status == .paused {
+                            Text("已暫緩")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.orange.opacity(0.2))
+                                .cornerRadius(4)
+                        }
+                    }
+                    
+                    if !item.subTasks.isEmpty {
+                        let completedCount = item.subTasks.filter { $0.isCompleted }.count
+                        Text("\(completedCount)/\(item.subTasks.count) 子任務")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    
+                    if let dueDate = item.dueDate {
+                        Text(dueDate, style: .date)
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
                 
                 Spacer()
                 
-                Text(item.status.rawValue)
-                    .font(.caption)
-                    .padding(4)
-                    .background(getStatusColor(for: item))
-                    .cornerRadius(4)
+                Image(systemName: item.category.icon)
+                    .foregroundColor(.gray)
             }
+            .padding(.vertical, 4)
+            .opacity(item.status == .paused ? 0.6 : 1.0)
         }
-        .padding(.vertical, 8)
-    }
-    
-    private func getRemainingTimeColor(for item: TodoItem) -> Color {
-        let components = Calendar.current.dateComponents([.hour],
-            from: Date(),
-            to: item.dueDate)
-        
-        if let hours = components.hour {
-            if hours < 24 {
-                return Color.red.opacity(0.2)
-            } else if hours < 72 {
-                return Color.orange.opacity(0.2)
-            }
-        }
-        return Color.green.opacity(0.2)
-    }
-    
-    private func getStatusColor(for item: TodoItem) -> Color {
-        switch item.status {
-            case .pending:
-                return Color.blue.opacity(0.2)
-            case .inProgress:
-                return Color.orange.opacity(0.2)
-            case .completed:
-                return Color.green.opacity(0.2)
-        }
+        .listRowBackground(item.isCompleted ? Color.gray.opacity(0.1) : Color(.systemBackground))
     }
 }
-
 #Preview {
     TodoItemRow(
         item: TodoItem(
             title: "測試任務",
-            description: "這是一個測試任務的描述",
-            dueDate: Date().addingTimeInterval(3600 * 24),
+            priority: .medium,
+            category: .work,
+            dueDate: Date(),
             isCompleted: false,
-            category: "測試",
-            status: .pending
+            subTasks: []
         ),
         viewModel: TodoViewModel()
     )
