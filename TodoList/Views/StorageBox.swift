@@ -8,28 +8,31 @@ import SwiftUI
 
 struct StorageBox: View {
     let title: String
+    let count: Int       // 新增計數參數
     let icon: String
     @Binding var isExpanded: Bool
     
     var body: some View {
         VStack {
-            Image(systemName: icon)
-                .font(.system(size: 24))
-            Text(title)
-                .font(.caption)
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
-        .onTapGesture {
-            withAnimation {
-                isExpanded.toggle()
+            Button(action: {
+                withAnimation {
+                    isExpanded.toggle()
+                }
+            }) {
+                VStack {
+                    Image(systemName: icon)
+                        .font(.system(size: 24))
+                    HStack {
+                        Text(title)
+                        Text("(\(count))")   // 顯示計數
+                            .foregroundColor(.gray)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(10)
             }
-        }
-        .dropDestination(for: TodoItem.self) { items, location in
-            // 處理拖放邏輯
-            return true
         }
     }
 }

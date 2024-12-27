@@ -35,6 +35,7 @@ struct ContentView: View {
                     HStack(spacing: 12) {
                         StorageBox(
                             title: "已完成",
+                            count: viewModel.items.filter { $0.isCompleted }.count,  // 已完成數量
                             icon: "checkmark.circle.fill",
                             isExpanded: .init(
                                 get: { expandedBox == .completed },
@@ -44,6 +45,7 @@ struct ContentView: View {
                         
                         StorageBox(
                             title: "暫緩",
+                            count: viewModel.items.filter { $0.status == .paused }.count,  // 暫緩數量
                             icon: "pause.circle.fill",
                             isExpanded: .init(
                                 get: { expandedBox == .pending },
@@ -53,6 +55,7 @@ struct ContentView: View {
                         
                         StorageBox(
                             title: "統計",
+                            count: 0,  // 統計不需要顯示數量，傳入0
                             icon: "chart.bar.fill",
                             isExpanded: .init(
                                 get: { expandedBox == .statistics },
