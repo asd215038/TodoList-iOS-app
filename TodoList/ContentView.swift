@@ -95,15 +95,14 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Die辦清單")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showingAddTask.toggle() }) {
                         Text("新增")
-                            .foregroundColor(.black)  // 設定文字顏色為黑色
+                            .foregroundColor(.indigo)  // 設定文字顏色為黑色
                             .padding(.horizontal, 12)  // 設定左右內邊距
                             .padding(.vertical, 6)     // 設定上下內邊距
-                            .background(Color.gray.opacity(0.3))  // 設定背景色為灰色，透明度0.3
+                            .background(Color(.systemGray6))  // 設定背景色為灰色，透明度0.3
                             .cornerRadius(8)  // 設定圓角
                     }
                 }
