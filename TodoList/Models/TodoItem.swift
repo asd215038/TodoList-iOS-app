@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 struct TodoItem: Identifiable, Transferable, Codable {
     var id: UUID
         var title: String
+        var script: String
         var priority: Priority
         var category: Category
         var dueDate: Date?
@@ -25,9 +26,10 @@ struct TodoItem: Identifiable, Transferable, Codable {
             case completed = "已完成"
         }
         
-        init(id: UUID = UUID(), title: String, priority: Priority, category: Category, dueDate: Date?, isCompleted: Bool, subTasks: [SubTask]) {
+        init(id: UUID = UUID(), title: String, script: String = "", priority: Priority, category: Category, dueDate: Date?, isCompleted: Bool, subTasks: [SubTask]) {
             self.id = id
             self.title = title
+            self.script = script
             self.priority = priority
             self.category = category
             self.dueDate = dueDate

@@ -34,7 +34,7 @@ struct ContentView: View {
                     // 底部三個保管箱
                     HStack(spacing: 12) {
                         StorageBox(
-                            title: "已完成",
+                            title: "完成",
                             count: viewModel.items.filter { $0.isCompleted }.count,  // 已完成數量
                             icon: "checkmark.circle.fill",
                             isExpanded: .init(

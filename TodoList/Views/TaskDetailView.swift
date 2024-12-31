@@ -11,7 +11,7 @@ struct TaskDetailView: View {
     @Environment(\.dismiss) private var dismiss
     let item: TodoItem
     @ObservedObject var viewModel: TodoViewModel
-    @State private var showingDeleteAlert = false  // 添加這個狀態來控制確認對話框
+    @State private var showingDeleteAlert = false
     
     var body: some View {
         NavigationView {
@@ -20,6 +20,22 @@ struct TaskDetailView: View {
                     Section(header: Text("任務資訊")) {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("標題：\(item.title)")
+                            
+                            // 添加任務描述的顯示
+                            if !item.script.isEmpty {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("任務描述：")
+                                        .font(.headline)
+                                    Text(item.script)
+                                        .font(.body)
+                                        .foregroundColor(.secondary)
+                                        .padding(8)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .background(Color(uiColor: .systemGray6))
+                                        .cornerRadius(8)
+                                }
+                                .padding(.vertical, 4)
+                            }
                             
                             HStack {
                                 Text("優先級：")
@@ -37,6 +53,7 @@ struct TaskDetailView: View {
                         }
                     }
                     
+                    // 其他 Section 保持不變
                     Section(header: Text("時間資訊")) {
                         if let dueDate = item.dueDate {
                             Text("到期日：")
@@ -58,7 +75,7 @@ struct TaskDetailView: View {
                     }
                 }
                 
-                // 底部按鈕
+                // 底部按鈕區域保持不變
                 HStack(spacing: 20) {
                     Button(action: {
                             viewModel.toggleCompletion(for: item)
@@ -96,31 +113,30 @@ struct TaskDetailView: View {
                             .frame(maxWidth: .infinity)
                         }
                         .tint(.red)
-                    }
-                    .padding()
-                    .buttonStyle(.bordered)
                 }
-                .navigationTitle("任務詳情")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("關閉") {
-                            dismiss()
+                                .padding()
+                                .buttonStyle(.bordered)
+                            }
+                            .navigationTitle("任務詳情")
+                            .navigationBarTitleDisplayMode(.inline)
+                            .toolbar {
+                                ToolbarItem(placement: .navigationBarTrailing) {
+                                    Button("關閉") {
+                                        dismiss()
+                                    }
+                                }
+                            }
+                            .alert("確認刪除", isPresented: $showingDeleteAlert) {
+                                Button("取消", role: .cancel) { }
+                                Button("刪除", role: .destructive) {
+                                    if let index = viewModel.items.firstIndex(where: { $0.id == item.id }) {
+                                        viewModel.removeItem(at: IndexSet(integer: index))
+                                    }
+                                    dismiss()
+                                }
+                            } message: {
+                                Text("確定要刪除這個任務嗎？此操作無法復原。")
+                            }
                         }
                     }
                 }
-                // 添加確認對話框
-                .alert("確認刪除", isPresented: $showingDeleteAlert) {
-                    Button("取消", role: .cancel) { }
-                    Button("刪除", role: .destructive) {
-                        if let index = viewModel.items.firstIndex(where: { $0.id == item.id }) {
-                            viewModel.removeItem(at: IndexSet(integer: index))
-                        }
-                        dismiss()
-                    }
-                } message: {
-                    Text("確定要刪除這個任務嗎？此操作無法復原。")
-                }
-            }
-        }
-    }

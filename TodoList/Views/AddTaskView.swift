@@ -71,11 +71,12 @@ struct AddTaskView: View {
                     Button("新增") {
                         let newItem = TodoItem(
                             title: title,
+                            script: script,  // 添加這行
                             priority: priority,
                             category: category,
                             dueDate: includeDueDate ? dueDate : nil,
                             isCompleted: false,
-                            subTasks: []  // 加入這行，初始化為空陣列
+                            subTasks: []
                         )
                         viewModel.addItem(newItem)
                         dismiss()
